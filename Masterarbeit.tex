@@ -39,8 +39,19 @@
 \begin{document}
 
 \include{Deckblatt}
-\pagenumbering{alph}
+\pagenumbering{roman}
+\stepcounter{page}
 \tableofcontents
+\newpage
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{section}{\listfigurename}
+\listoffigures
+\newpage
+\phantomsection
+\addcontentsline{toc}{section}{\listtablename}
+\listoftables
+\clearpage
 
 \pagenumbering{arabic}
 \numberwithin{equation}{section}
@@ -56,7 +67,6 @@
 
 \include{ExpertModels}
 
-% \include{Framework}
 \include{Application}
 
 \include{EmpiricalResults}
@@ -76,6 +86,9 @@
 % \bibliography{bibliographie_BA}
 \newpage
 \bibliography{bibliography}
+
+\newpage
+\include{Declaration}
 
 \end{document}
 
