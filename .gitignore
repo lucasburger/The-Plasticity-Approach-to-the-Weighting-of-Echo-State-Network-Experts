@@ -1,0 +1,10 @@
+*.txt
+*.aux
+*.pdf
+*_old.tex
+try*.py
+Masterarbeit.*
+!Masterarbeit.pdf
+!Masterarbeit.tex
+/Short Overview
+/.vscode

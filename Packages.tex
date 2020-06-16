@@ -1,0 +1,77 @@
+% Anpassung des Seitenlayouts --------------------------------------------------
+%   siehe Seitenstil.tex
+% ------------------------------------------------------------------------------
+
+% Anpassung an Landessprache ---------------------------------------------------
+\usepackage[english]{babel}
+
+% \TODO set tocdepth
+\setcounter{tocdepth}{3} % 2
+\setcounter{secnumdepth}{4}
+
+% Math
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% bold greek letters
+\usepackage{bm}
+
+% euro symbol
+\usepackage[official]{eurosym}
+
+% Umlaute ----------------------------------------------------------------------
+%   Umlaute/Sonderzeichen wie äüöß direkt im Quelltext verwenden (CodePage).
+%   Erlaubt automatische Trennung von Worten mit Umlauten.
+% ------------------------------------------------------------------------------
+\usepackage[utf8]{inputenx}
+% \usepackage[latin1]{inputenc}
+
+
+% Grafiken
+\usepackage{float}
+
+
+% Einfache Definition der Zeilenabstände und Seitenränder etc. -----------------
+\usepackage{setspace}
+\usepackage{geometry}
+
+% Literaturverzeichnis ---------------------------------------------------------
+\usepackage{cite}
+\bibliographystyle{ecta}
+\usepackage{natbib} 
+% \usepackage[backend=biber,style=authoryear,refsection=section]{biblatex}
+
+
+% zum Umfließen von Bildern ----------------------------------------------------
+\usepackage{floatflt}
+
+
+% fortlaufendes Durchnummerieren der Fußnoten ----------------------------------
+\usepackage{chngcntr}
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+
+
+
+
+% definiert u.a. die Befehle \t'odo und \listoft'odos
+\usepackage{todonotes}
+
+
+\usepackage{blindtext}
+
+
+% Hyperlinks
+% \usepackage{hyperref}
+
+% \usepackage{glossaries}
+
+\usepackage{bookmark}
+
+
+% Tables
+\usepackage{multirow}
+\usepackage{multicol}
+
+% also for tables
+\usepackage{array}

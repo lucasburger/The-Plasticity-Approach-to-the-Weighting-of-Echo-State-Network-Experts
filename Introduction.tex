@@ -1,0 +1,69 @@
+\section{Introduction}
+\setcounter{section}{1}
+\label{CH:Intro}
+\setcounter{page}{1}
+
+
+Not only in light of the recent outbreak of the Corona virus pandemic (COVID-19), presumably starting in China and now spreading all over different continents, the world is in constant danger of falling apart. Even if this virus is a health risk to the human population, the reaction of financial markets has been immediate and severe. Not only the ever increasing number of infections but fears of a recession, the preparation for a stock market crash in the realms of the global financial crisis of 2008/2009 or the potential collapse of health care systems all around the world are dominating the news headlines these days. The strict restrictions of many governments in the form of curfews, working from home requirements and social distancing guidelines, influences listed companies and private companies equally. Those difficult conditions play out in stock markets as well as bond markets because of an increased risk of defaul or total bankruptcy. When governments file \textit{Corona Bills} for the stimulus of their economies, $\$ 2.2$ trillion in the USA\footnote{https://www.washingtonpost.com/business/2020/03/25/trump-senate-coronavirus-economic-stimulus-2-trillion/, opened March 30th, 2020 10:25 pm.} or \EUR{}$165$ billion in Germany\footnote{https://www.sueddeutsche.de/politik/coronavirus-covid-19-hilfspaket-wirtschaft-1.4857038, opened March 30th, 2020, 10:30 pm.}, and central bank interventions become necessary, the currency markets also don't remain untouched. Finally, the combination with the oil price war between Russia and Saudi Arabia, which doesn't receive much attention beneath the corona virus headlines, weighing commodity markets, we are faced with uncertain times everywhere we look.
+
+Not only the financial domain, with banks, insurance companies and investment funds, are at the frontline of constantly facing significant risks. Also other sectors a exposed to risks, such as production facilities relying on supply chains, retail stores constantly facing the forces of supply and demand, natural resource mining companies that rely on the discovery of new mineral deposits or utility companies providing basic infrastructure like water, sewage service, electricity or natural gas. Just to name a few.
+
+While a thorough risk assessment becomes paramount in light of this imminent financial, health and supply crisis, it is also necessary in flourishing times like the previous year 2019, when the probability of an adverse event may likely be underestimated. Hence, proper risk manangement plays a very crucial role to soundly position and act in any of the markets mentioned above and any economic environment.
+
+In this thesis we want to focus on the financial domain where the famously quoted trade-off between risk and expected reward, initially elaborated by \cite{Markowitz1952}, builds the foundation for acting in relation to and for modelling of financial returns. When striving for profit, Hedge Funds and high frequency trading have evaporated any predictablity of the expected reward - the first moment of the return distribution - exploiting market inefficiencies and invoking the efficient market hypothesis \citep{Fama1970}. While the definition of uncertainty in financial markets quickly escalates into the philosophical space, the volatility/variance - the second moment of the return distribution - is widely considered as a practical measure of risk and its forecasting has important implications for all participants, e.g. short-term traders, long-term investors and regulators. 
+
+While the first moment remains largely unpredictable, the second moment exhibits certain characteristics that can be exploited for the assessment and prediction of risk. Therefore, finding and using those patterns to make good forecasts of future volatilities is of great interest. This thesis is using reservoir computing which is naturally built to encounter and interpret patterns in any dataset, where the focus, as will become clear in a moment, lies predominantly on the time series data. Taking the stance of a model selection problem, we will use it trying to improve forecasts of daily realized volatilities.
+
+
+\subsection{Reservoir Computing}
+
+Reservoir Computing is a new emerging field of machine learning that employs large dynamical systems - called reservoirs - in order to perform certain tasks. 
+The main motivation behind this approach is to map the (low dimensional) input to a higher dimensional representation and let the reservoir develop multiple patterns in its loosely coupled oscillators that can be exploited to perform a given task.
+
+The earliest example of this concept can be found in \cite{Buonomano1995TemporalIT} and has gained a lot of attention, especially over the last years with adaptions of reservoirs to different, more traditional machine learning models mostly related to neural networks.
+Originally and independently introduced by \cite{Jaeger2003, Jaeger2004Harness} (under the name Echo State Network) and \cite{Maass2002LSM} (under the name Liquid State Machine) the Echo State Network is one of many adaptations of Reservoir Computing, whose architecture resembles that of a recurrent neural network. Other approaches have been employed along the lines of shallow Neural Networks \citep{Huang2006ELM}, Deep Neural Networks \citep{Gallichio2017DeepRCSurvey, Gallichio2017DeepRC}, Convolutional Neural Networks \citep{MaChenLi2019ConvESN}, State Affine Systems \citep{Grigortega2018SAS} or Nonlinear Transient Computing \citep{Crook2007NonLinTrans}.
+
+Reservoir computing builds on the idea that a large excitable network (the reservoir) is presented with a signal and the connections - feed forward and recurrent - within the network produce excitable patterns that can be mapped to a (targeted) output. The advantage of reservoir computing over more traditional neural networks is the fact that the internal connections of the reservoir remain completely untrained after their random initialization. Hence, this enables larger networks going into multiple $1000$ nodes\footnote{Compared to maybe a few hundert for traditional neural networks, which already stretches the bounds of numerical feasability.}. The readout of the reservoir that produces an output is the only part of the system that is being trained. This step doesn't have to be sophisticated and most researchers stick to a linear regression in order to keep the simplicity and computational benefits of this approach.
+By narrowing down the training of the model to a linear regression, common problems of neural networks, namely vanishing gradients, local minima, high dimensionality and slow learning, are naturally tackled. Additionally, there is a vast literature on the estimation, inference and robustness of linear regression models that can be built on.
+
+Given the dynamical nature of these networks, these models have mostly been used to work with time series data, i.e. 
+\begin{itemize}
+    \item wind power forecast \citep{Xiaomin2015WindPower}
+    \item stock trading \citep{Lin2011StockTrading}
+    \item prediction of dialysis in ICUs \citep{Verplancke2010Dialysis} 
+    \item useful life prediction of machines \citep{Rigamoti2018UsefulLife}
+    \item language modelling \citep{Rachez2014LanguageModelling}
+\end{itemize}
+
+Requiring much less and more straightfoward training, the reservoir computing approach still suffers the choice of some hyperparameters. Apart from the training of the readout, those still include some parameters of neural networks like the number of hidden nodes, the appropriate scaling and shift of the input signal, a bias or the activation function, but also introduces some new hyperparameters in relation to the network's connections. This refers to the choice of a distribution for the initialization of connections, the connectivity in the recurrent connections of the network or the appropriate scaling of those internal connections to ensure network stability, all of which we are going into more detail later.
+
+The search for a (task dependent) optimal set of hyperparameters weights heavily on the otherwise fast and easy training of reservoir computing models. Because of their iterative nature, the categorical choice for some or the non availability of analytical solutions for other hyperparameters, the employer of such a model is mostly left with a try-and-error approach. Sophisticated methods beyond mere grid search for the selection of those parameters are available, however,
+
+the search can be circumvented by different approaches including
+\begin{enumerate}
+    \item improving stability (\cite{Verzelli2019} or \cite{Jarvis2010ExtendingStability})
+    \item array of reservoirs \citep{Grigortega2016ParallelRC}
+    \item committee methods \citep{StanekCommitteeMethods}
+\end{enumerate}
+where the second and the third employ a set of multiple reservoir computers each having a different configuration of hyperparameters. In this thesis we also want take the approach of multiple reservoir computer, namely Echo State Networks, and will consider them a set of experts for the preditive task daily realized volatilities.
+
+While the properties and capabilities of reservoir systems have been studied in the artificial space, recent advances into the physical implementation of reservoir computing have gained a lot of attention building on electronic, photonic, spintronic, mechanical or even real biological reservoir computers \citep{Tanaka2019PhysicalRC}.
+
+\subsection{Notation}
+Throughout this thesis we will, unless otherwise stated, use the following notation. Any deviations should be clear from the context.
+\begin{eqnarray*}
+    x, y, u & \hspace{1cm} & \text{Scalar values} \\
+    \bx, \by, \balpha & \hspace{1cm} & \text{Vectors, eg in } \R^{n} \\
+    X, \Sigma, \Gamma & \hspace{1cm} & \text{Matrices, e.g. in }\R^{n \times n} \\
+    X' & \hspace{1cm} & \text{Transpose of the matrix X} \\
+    \left[...;...\right] & \hspace{1cm} & \text{Vertical concatenation of arrays, e.g. } X = \left[\bx_1;...; \bx_n\right] \\
+    \one{n} & \hspace{1cm} & \text{Idenity matrix of size } n \times n \\
+    \text{diag}(\bx) & \hspace{1cm} & \text{Maps } \bx \in \R^{n} \text{ onto the diagonal of a matrix in }\R^{n\times{}n} \\
+    \bx \odot \by & \hspace{1cm} & \text{Hadamard product, elementwise multiplication} \\
+\end{eqnarray*}
+
+\subsection{Organisation}
+
+The remainder of this thesis is organised as follows: Section \ref{CH:LinearRegression} will give a short introduction into the application of linear regression in the offline as well as the online setting. Section \ref{CH:ESN} will introduce Echo State Networks as one variant of the reservoir computing paradigm. This model relies on linear regression as training of the model, which motivates the separate introduction of linear regression in section \ref{CH:LinearRegression}. We will also dive into ways of tuning the reservoir of an Echo State Network beyond its random initialization. Section \ref{CH:ExpertModels} then presents mixture of experts models as means of employing a committee of (machine learning) models to combine them into a single prediction. Building on the improvements made to Echo State Networks from section \ref{CH:ESN}, we propose a novel way of weighting a set ESN experts by the plasticity of the network activation. This approach is mainly motivated by the fact that the experts' weigthing is updated prior to the prediction, which contrasts the standard loss induced weighting of experts. Section \ref{CH:Application} will outline the application of the proposed models to real world financial data in the form of the daily realized volatility of the IBM stock price traded on the New York stock exchange. It will also present the Heterogeneous Autoregressive model of Realized Volatility} (HAR) model \citep{Corsi2009} as a common benchmark for the prediction of realized volatility. Section \ref{CH:EmpiricalResults} presents the empirical results, section \ref{CH:Conclusion} concludes and proposes further directions of research for the novel approach of \textit{\rawtitle}.
+
+

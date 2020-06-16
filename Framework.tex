@@ -1,0 +1,34 @@
+\section{Framework}
+\label{CH:Framework}
+
+
+
+In this section we are going to present the empirical setup for the training and performance evaluation using two different time series. On the one hand, we are going to look at the Mackey Glass chaotic time series, which is often considered when looking at time series predictions. It is a time-delay differential equation that exhibits chaotic behaviour which can be tuned by different parameters (see section \ref{CH:EmpiricalResults}). On the other hand, we are going to employ our model on real world financial data, namely the stock price evolution of IBM, which we will try to predict on different frequencies.\\ 
+As already mentioned in section \ref{CH:Model}, the training of the network consists of two steps, namely the tuning of hyperparameters and the training of a (linear) model for the hidden-to-output connections.
+
+\subsection{Methodology}
+
+In order to make forecasts of time series, we will run the network and gather its network activations. With the full regressor matrix $X$ we will then employ a the linear model. For our application we chose a leaky integrator ESN with bias. The linear models will be simple linear regression for the Mackey-Glass time series and Logistic Regression as well as Ridge Regression with cross validation for the IBM stock price. Hyperparameters will be tuned on the given training set and will be kept constant for the whole forecasting window, where predictions will only be made one step ahead.
+
+
+\subsection{Training}
+As mentioned in section \ref{CH:Intro}, we consider matrix representations of input, reservoir states and output series. For example the input series is $u \in \R^{T\times K}$ and accordingly $u(t) \in \R^{1\times K}$ with length $T\in\N$ and $K\in\N$ inputs.
+Training of an Echo State Network can be summarized in a few steps. 
+\begin{enumerate}
+\item Select hyperparameters of the chosen architecture and initialize the random connections accordingly. Initialize the reservoir state by $x(0) = \bf{0} \in \R^{N}$.
+\item Feed the network with the feature signal $u$ and update the network states according to the chosen architecture. Gather the network activations into a matrix $\tilde X \in \R^{T\times N}$ where $T\in \N$ is the length of the feature series.
+\item Drop a specified number $b \in \N$, $b < T$, of first observations of $\tilde X$, as well as in $u$ and $y$ to wash out the influence of the 0-initialization of the reservoir state and concatenate the input and the reservoir states $X = \left[u; \tilde X\right] \in \R^{(T-b)\times(K+N)}$. The inclusion of an intercept depends on the task and can be part of the regressor matrix $X$.
+\item Employ a (linear) model $y = X\beta + \eps$ and measure its performance.
+\end{enumerate}
+Depending on the size of the network one has to employ some regularization in order to get decent forecasting performance. Often times ridge regression is employed, but depending on the nature of the time series that will be forecasted, one may also choose different models. In section \ref{CH:EmpiricalResults}, we will shed some light on why regularization is not necessary for non-stochastic time series like the Mackey-Glass.
+
+
+The choice of hyperparameters forms the first step of this training procedure and their optimization poses a difficult task. Given the random initialization of the reservoir, analytical solutions have not been found so far and efficient optimization is still under research. Often times, basic grid search is employed. With the original main focus on the internal connections $W$ and the spectral radius, the admissible space for this hyperparameter is unbounded (keeping in mind, that $\rho(W) > 1$ doesn't necessarily destroy the ESP). The choice of the spectral radius in conjunction with the stability of the network depends on the input has to examined by try and error. By switching to the spectral radius of the corresponding positive matrix $\abs{W} = \left(\abs{w_{ij}}\right)$ (see section \ref{CH:Model:SpectralRadius} and \citep{YILDIZ20121}), this problem would be remedied by choosing $\rho$ from the bounded interval $(0,1)$. However, this may be too restrictive for some tasks. We will go with the original definition of the spectral radius.
+
+What really makes life easier in terms of hyperparameter optimization is the fact, that properties of smaller reservoirs regarding their memory and general capabilities, often translate onto larger reservoirs and therefore, optimization can be performed with relatively small reservoirs.\footnote{There is a minimum size for the reservoir to function properly, see \citep{Lukosecicius2012}.} Afterwards, one can increase the size and repeat the training steps to get a powerful and well tuned model.
+
+In our setting we will use the Python package {\it scikit-optimize} for the optimization of hyperparameters, which is a powerful library to minimize (very) expensive and noisy black-box functions\footnote{Homepage with useful examples as well as theory: \url{https://scikit-optimize.github.io}. More details are provided in Appendix \ref{A:ScikitOptimize}}.
+
+
+
+

@@ -1,0 +1,73 @@
+\section{Linear Regression}
+\label{CH:LinearRegression}
+
+Linear regression can be considered the most basic machine learning model which existed far before the term \textit{machine learning} or \textit{artificial intelligence} have been used. We will use linear regression in conjunction with Echo State Networks which motivates this short introduction into this matter. Section \ref{CH:LinearRegression:Offline} will introduce the offline learning methods for linear regression and section \ref{CH:LinearRegression:Online} will present methods to estimate a linear regression model in an online fashion. Especially the latter approach suits the time series focus and iterative nature of reservoir computing.
+
+\subsection{Offline Learning}
+\label{CH:LinearRegression:Offline}
+
+Asssume we have $k \in \N$ independent variables, denoted by $\bx = \left(x_1, ..., x_k\right) \in \R^k$ and called regressors, and one independent variable which is referred to by $y \in \R$. We want to assess inference from $\bx$ on $y$ and want to find and quantify their relationship. Assume, we have $n \in \N$ observations of pairs $(\bx_i,y_i)$, $i=1,...,n$ and gather those in matrices $X = \left[\bx_1;...;\bx_n\right]\in \R^{n\times k}$ and $Y \in \R^{n}$. We want to find a linear relationship
+\begin{equation}
+    Y = \alpha + X \bbeta + \varepsilon
+\end{equation}
+where $\alpha \in \R$ is an intercept, $\bbeta \in \R^{k}$ is the vector of slopes and $\varepsilon$ is an i.i.d. error term that follows a multivariate normal distribution, $\varepsilon \sim \mathcal{N}({\bf 0}, \sigma_{\varepsilon}^2\one{n})$.
+In this procedure, the fit is not perfect and we commit an error $e = Y - X \bbeta$ as a realization of $\varepsilon$, which is called residual and is subject to a loss function $L: \R^2 \to \R$.
+The estimate $\hat\bbeta$ of the slope $\bbeta$ for the common \textit{Mean Squared Error} $L: (\hat y, y) \mapsto \left(\hat y - y\right)^2$ is the ordinary least squares
+\begin{equation}
+    \hat\bbeta = \left(X'X\right)^{-1}X'Y = \argmin_{\bbeta \in \R^k} \sum_{i=1}^{n} \left(y_i - \bx_i\bbeta\right)^2 = \argmin_{\bbeta \in \R^k} \sum_{i=1}^{n} e_i^2\label{EQ:OrdinaryLeastSquares}
+\end{equation}
+that minimizes the sum of squared residuals.
+Depending on the dimensionality of the regression model and the relationship of observations $n$ and number of regressors $k$, regularization can become necessary.
+Regularization describes the procedure of restricting the estimation of a linear model to prevent overfitting (when $k > n$) and provide good generalization results on unseen data, e.g. when we want to predict $y$ based on a new observation of $\bx$.
+One possibility for regularization is called Lasso Regression with
+\begin{equation}
+    \hat\bbeta = \argmin_{\bbeta \in \R^{N\times L}} L(X\bbeta, Y) + \lambda \norm{\bbeta}_1 \label{EQ:LassoRegression}
+\end{equation}
+which has no closed form solution like \ref{EQ:OrdinaryLeastSquares} and has to be solved iteratively. Depending on the condition of the matrix $X'X$ in \refp{EQ:OrdinaryLeastSquares}, it can also become crucial to regularize the matrix in order to prevent numerical instability when inverting $X'X$. This can be achieved by Ridge Regression
+\begin{eqnarray}
+    \hat\bbeta &=& \argmin_{\bbeta \in \R^{N\times L}} L(X\bbeta , Y) + \lambda \norm{\bbeta}_2 \nonumber\\
+    & = & \left(X'X + \lambda \one{N}\right)^{-1}X'Y \label{EQ:RidgeRegression}
+\end{eqnarray}
+which has a closed form solution and prevents numerical instability of the inversion if $\lambda > 0$ is chosen sufficiently large, which depends on the numerical accuracy and capability.
+
+In order to achieve a good generalization of the predictive performance, the regularization parameter $\lambda$ in \refp{EQ:LassoRegression} or \refp{EQ:RidgeRegression} has to be chosen carefully, i.e. by $k$-fold cross validation which we will further elaborate on in section \ref{CH:Application:Methodology}.
+
+Another approach which finds application in the estimation of a model with heteroskedastic error terms, i.e. where different observations bear different levels of uncertainty, $\varepsilon_i \sim \mathcal{N}(0, \sigma_{\varepsilon,i}^2)$ depending on the index $i$, includes a weighting factor $\rho_i$ to assign a different weight to the error committed for different observations. This approach is called weighted ordinary least squares. The error function then becomes
+\begin{equation}
+    L = \sum_{i=1}^{n} \rho_i \left(y_i - \bx_i \beta\right)^2 = \sum_{i=1}^{n} \rho_i e_i^2 \label{EQ:WeightedOLS}
+\end{equation}
+One way of weighting those observations and to account for the heteroskedasticity would be to account for the level of uncertainty and choose the weights as the inverse of the variance of the measurement, e.g. $\rho_i = \frac{1}{\sigma_{\varepsilon, i}^2}$. 
+Another argument to bring forth in favor of weighted least squares would be in the setting of time series data. The fact, that older data may be less relevant for the prediction of future data than more recent observations, one can progressively punish older observations. Depending on the application an the amount of data, for example, this could be using $\rho_i = \rho^{i}$, for $0< \rho < 1$, and older observations would receive an exponentially lower weight\footnote{Depending on the ordering of the data, this update can also be $\rho_i = \rho^{n-i}$ where $n = \#I$ is the number of observations.}.
+
+\subsection{Online Learning}
+\label{CH:LinearRegression:Online}
+
+The term \textit{online learning} is referring to a setup, where the training of any model is performed incrementally as opposed to the estimation procedures presented in section \ref{CH:Trainint:Offline}. Especially in a time series setup, where by the nature of the data new information becomes available in a sequential order, online learning methods make an update of the best predictor for future data possible without the need to re-train the model on the whole dataset. In other areas where vast amounts of data are available for the training of machine learning, online learing methods become crucial because of computational limitations.
+As reservoir computing is predominantly concerned with time series data, a combination of an Echo State Network with sequential updates of the model parameters builds a powerful tool.
+
+The recursive least squares algorithm (RLS) considers the ordinary least squares problem of equation \refp{EQ:OrdinaryLeastSquares}. Assume, we have an indexed set of covariates $\bx$ and target values $y$: $\left\{(\bx_i, y_i) \in \R^{n+1} \,:\, n \in \N, i \in I\right\}$, for an index set $I$, and as in section \refp{CH:Training:Offline} want to find the common relationship $y =\bx\beta + \varepsilon$ where $\varepsilon \sim \mathcal{N}(0, \sigma_{\varepsilon}^2)$. The offline approach of section \ref{CH:ESN:OfflineLearning} would gather all covariates $\bx$ into a regressor matrix $X$ and the target values $y$ into a vector $Y$. Instead of using \refp{EQ:OrdinaryLeastSquares} to estimate the relationship, the RLS algorithm updates
+\begin{eqnarray}
+    \Sigma_i & = & \bx_i' \bx_i + \Sigma_{i-1} \label{EQ:RLS11}\\
+    \hat \bbeta_i & = & \hat \bbeta_{i-1} - \Sigma_i^{-1} \bx_i' \left(\bx_i\hat\bbeta_{i-1} - y_i\right) \label{EQ:RLS12}
+\end{eqnarray}
+Where $\Sigma_0 := {\bf 0} \in \R^{k\times k}$, $\hat\bbeta_0 := {\bf 0} \in \R^{k}$ and $\Sigma_i$ is a running version of the expression $X'X$ from \refp{EQ:OrdinaryLeastSquares}. 
+In order to prevent matrix inversion of $\Sigma_i$ by using the matrix inversion lemma\footnote{More specifically, the Sherman-Morrison Formula, see appendix \ref{CH:Appendix:Math:MatrixInversion}.} we can reformulate \refp{EQ:RLS11}-\refp{EQ:RLS12} and initialize an auxiliary $\Gamma_0 = \one{n} \in \R^{n \times n}$. The update of $\hat \beta$ then changes to
+\begin{eqnarray}
+    \Gamma_i & = & \Gamma_{i-1} - \frac{\Gamma_{i-1} \bx_i \bx_i' \Gamma_{i-1}}{1 + \bx_i\Gamma_{i-1}\bx_i'} \label{EQ:RLS21} \\
+    \hat\bbeta_i & = & \hat\bbeta_{i-1} - \Gamma_i \bx_i' \left(\bx_i\hat\bbeta_{i-1} - y_i\right) \label{EQ:RLS22}
+\end{eqnarray}
+\cite{Kushner2003RLS} shows that this iteration is equivalent to the OLS estimate \refp{EQ:OrdinaryLeastSquares}. The proof also includes the relationship $\Gamma_i = \Sigma_i^{-1} := \left(X'X\right)^{-1}$. 
+The regularized version along the lines of ridge regression \refp{EQ:RidgeRegression} with regularization strength $\lambda_r > 0$ can be achieved by setting $\Gamma_0 = \left(1 + \lambda_r \one{n}\right)^{-1}$ and the iterations yield $\Gamma_i = \left(\Sigma_i + \lambda_r \one{n}\right)^{-1}$ which is one part of equation \refp{EQ:RidgeRegression}.
+
+The recursive least squares can be further extended for the inclusion of a weighting factor $0 < \rho < 1$ as in the weighted ordinary least squares approach \refp{EQ:WeightedOLS}. Based on 
+\begin{equation}
+    \Sigma_i = \bx_i' \bx_i + \rho\Sigma_{i-1}
+\end{equation}
+To introduce an exponential weighting factor $\rho$, the recursive update of \refp{EQ:RLS21}-\refp{EQ:RLS22} becomes
+\begin{eqnarray}
+    \Gamma_i & = & \Gamma_{i-1} - \frac{\Gamma_{i-1} \bx_i \bx_i' \Gamma_{i-1}}{\rho + \bx_i\Gamma_{i-1}\bx_i'} \label{EQ:RLS1} \\
+    \hat\bbeta_i & = & \hat\bbeta_{i-1} - \Gamma_i \bx_i' \left(\bx_i \hat\bbeta_{i-1} - y_i\right) \label{EQ:RLS2}
+\end{eqnarray}
+which is equivalent to the exponential weighting of \refp{EQ:WeightedOLS}, namely $\rho_i = \rho^{i}$.
+
+

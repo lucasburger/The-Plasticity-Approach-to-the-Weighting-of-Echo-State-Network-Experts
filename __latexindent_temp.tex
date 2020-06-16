@@ -1,0 +1,87 @@
+%------------------------------------------------------------------------------
+% Masterarbeit 
+% Thema: The Plasticity Approach to the Weighting of Echo State Network Experts
+% -----------------------------------------------------------------------------
+% Autor: Lucas Burger
+% E-Mail: Lucas.Burger@uni-konstanz.de
+% -----------------------------------------------------------------------------
+
+\documentclass[
+    12pt, % Schriftgröße
+    DIV10,
+    ngerman, % für Umlaute, Silbentrennung etc.
+    a4paper, % Papierformat
+    oneside, % einseitiges Dokument
+    titlepage, % es wird eine Titelseite verwendet
+    headings=normal, % Größe der Überschriften verkleinern
+    listof=totoc, % Verzeichnisse im Inhaltsverzeichnis aufführen
+    bibliography=totoc, % Literaturverzeichnis im Inhaltsverzeichnis aufführen
+    index=totoc, % Index im Inhaltsverzeichnis aufführen
+    captions=tableheading, % Beschriftung von Tabellen unterhalb ausgeben
+    draft=False % Status des Dokuments (final/draft)
+]{article}
+
+
+\input{Meta}
+
+\input{Packages}
+
+\makeindex
+
+
+\input{Seitenstil}
+
+
+\input{Befehle}
+
+
+
+\begin{document}
+
+\include{Deckblatt}
+\pagenumbering{alph}
+\tableofcontents
+
+\pagenumbering{arabic}
+\numberwithin{equation}{section}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\let\clearpage\relax
+
+\include{Introduction}
+
+\include{LinearRegression}
+
+\include{EchoStateNetworks}
+
+\include{ExpertModels}
+
+% \include{Framework}
+\include{Application}
+
+\include{EmpiricalResults}
+
+\include{Conclusion}
+
+\newpage
+
+\include{Appendix}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Einbinden aller Bücher
+% \nocite{*}
+% \addbibresource{bibliographie_BA.bib}
+% \bibliography{bibliographie_BA}
+\newpage
+\bibliography{bibliography}
+
+\end{document}
+
+
+
+
+
+
+
